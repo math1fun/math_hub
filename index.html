@@ -113,6 +113,48 @@ a{color:inherit;text-decoration:none}
 .tab:active{transform:scale(.95)}
 .tab.active{background:linear-gradient(90deg,#4f7cff,#8b5cf6);border-color:transparent;color:#fff;box-shadow:0 6px 18px rgba(99,102,241,.45)}
 
+
+/* info buttons + popup */
+.controls{position:static;margin:14px 0 8px;padding:8px 0;background:none;backdrop-filter:none}
+.info-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.info-btn{
+  padding:11px 22px;border-radius:999px;border:1px solid var(--line);cursor:pointer;font-family:inherit;
+  font-size:1rem;font-weight:700;color:var(--text);
+  background:transparent;box-shadow:none;
+  transition:transform .2s ease,background .25s ease,border-color .25s ease;
+}
+.info-btn:hover{transform:translateY(-2px);background:var(--card);border-color:var(--muted)}
+.info-btn:active{transform:scale(.95)}
+.info-btn:focus-visible{outline:2px solid var(--muted);outline-offset:3px}
+.modal{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(5,8,20,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.modal[hidden]{display:none}
+.modal.open{display:flex;animation:modalFade .25s ease both}
+.modal-box{
+  position:relative;width:100%;max-width:560px;max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;
+  background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:22px;
+  padding:30px 28px 26px;box-shadow:0 24px 60px rgba(0,0,0,.5);
+  animation:pop .35s cubic-bezier(.2,.9,.3,1.2) both;
+}
+.modal-box h2{font-size:1.35rem;font-weight:800;margin-bottom:16px;padding-right:36px}
+.modal-box p{color:var(--text);line-height:1.85;font-size:.98rem;word-break:keep-all}
+.modal-box p + p{margin-top:14px}
+.modal-close{
+  position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:1.1rem;line-height:1;
+  transition:transform .2s ease,background .2s ease;
+}
+.modal-close:hover{background:var(--card-hover);transform:rotate(90deg)}
+.how-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.how-list > li{font-weight:700;font-size:1rem;word-break:keep-all}
+.how-list ul{list-style:none;margin-top:6px;padding-left:4px}
+.how-list ul li{font-weight:400;color:var(--muted);font-size:.93rem;line-height:1.7;padding-left:14px;position:relative}
+.how-list ul li::before{content:"-";position:absolute;left:0}
+.modal-box p.how-sign{margin-top:20px;text-align:right;color:var(--muted);font-size:.95rem;font-weight:600}
+@keyframes modalFade{from{opacity:0}to{opacity:1}}
+
 /* sections */
 .section{margin-top:30px}
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
@@ -216,6 +258,8 @@ a{color:inherit;text-decoration:none}
 .toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
 
 footer{margin:50px 0 34px;text-align:center;color:var(--faint);font-size:.82rem;line-height:1.8}
+.foot-msg{word-break:keep-all}
+.foot-msg .foot-sign{margin-top:8px;font-weight:700;color:var(--muted)}
 footer a{text-decoration:underline;text-underline-offset:3px}
 
 @media (max-width:560px){
@@ -248,14 +292,12 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 
   <header class="hero">
     <h1 class="fx" style="--d:120ms"><span class="grad">수학 개념 총정리 허브</span></h1>
-    <p class="fx" style="--d:260ms">정의 → 공식 → 예제 흐름으로 정리하고, 그림을 직접 움직이며 배우는 개념을 한곳에 모았습니다.</p>
   </header>
 
   <div class="controls fx" style="--d:700ms">
-    <div class="tabs" role="tablist" aria-label="학교급 필터">
-      <button class="tab active" data-filter="all" role="tab">전체</button>
-      <button class="tab" data-filter="middle" role="tab">중학교 수학</button>
-      <button class="tab" data-filter="high" role="tab">고등학교 수학</button>
+    <div class="info-btns">
+      <button class="info-btn" type="button" data-modal="modal-why" aria-haspopup="dialog">💡 만든 이유</button>
+      <button class="info-btn" type="button" data-modal="modal-how" aria-haspopup="dialog">✅ 활용법!</button>
     </div>
   </div>
 
@@ -263,7 +305,6 @@ footer a{text-decoration:underline;text-underline-offset:3px}
     <section class="section" id="sec-middle" data-level="middle">
       <div class="sec-head rv">
         <h2><span class="ico">📘</span>중학교 수학</h2>
-        <p>중1 · 중2 개념 총정리</p>
       </div>
       <div class="grid" id="grid-middle"></div>
     </section>
@@ -271,7 +312,6 @@ footer a{text-decoration:underline;text-underline-offset:3px}
     <section class="section" id="sec-high" data-level="high">
       <div class="sec-head rv">
         <h2><span class="ico">📐</span>고등학교 수학 <small style="font-size:.8rem;font-weight:600;color:var(--muted)">(2022 개정)</small></h2>
-        <p>공통수학 · 선택과목 개념 총정리</p>
       </div>
       <div class="flow rv" aria-label="학습 순서">
         <button class="node" type="button" data-grade="공통수학1" style="--nd:.15s">공통수학1</button><span class="arr" aria-hidden="true" style="--nd:.3s">→</span>
@@ -287,8 +327,12 @@ footer a{text-decoration:underline;text-underline-offset:3px}
   </main>
 
   <footer class="rv">
-    <div>각 카드를 누르면 해당 개념 총정리 사이트가 새 탭에서 열립니다.</div>
-    <div>인터렉티브한 앱으로 설명과 함께 직접 학생이 조작하고 체험할 수 있도록 하였습니다.</div>
+    <div class="foot-msg">
+      <div>수학은 답을 맞히는 능력보다 답을 찾아가는 과정이 아름다운 학문입니다.</div>
+      <div>궁금해하고, 생각하고, 질문하는 순간 수학은 더 이상 어려운 과목이 아닙니다.</div>
+      <div>수학을 포기하지 말고, 수학이 주는 작은 발견의 기쁨을 매일 느껴 보세요!</div>
+      <div class="foot-sign">- 환수쌤도 같이 응원할게요! -</div>
+    </div>
   </footer>
 </div>
 
@@ -496,14 +540,16 @@ function fallback(text,cb){
 
 /* ===== 테마 ===== */
 const root=document.documentElement, tb=$("#themeBtn");
-function setTheme(t){
+function setTheme(t,persist){
   root.dataset.theme=t; tb.textContent = t==="light" ? "☀️" : "🌙";
-  try{localStorage.setItem("mathHubTheme",t);}catch(_){}
+  if(persist){ try{localStorage.setItem("mathHubTheme",t);}catch(_){} }
 }
 let saved=null; try{saved=localStorage.getItem("mathHubTheme");}catch(_){}
-setTheme(saved || "dark");
+let sysTheme="dark"; try{ if(window.matchMedia("(prefers-color-scheme: light)").matches) sysTheme="light"; }catch(_){}
+/* 저장된 선택이 있으면 그것을, 없으면 기기(시스템) 설정을 따릅니다 */
+setTheme(saved || sysTheme, false);
 tb.addEventListener("click",()=>{
-  setTheme(root.dataset.theme==="light"?"dark":"light");
+  setTheme(root.dataset.theme==="light"?"dark":"light", true);
   if(tb.animate && !REDUCED) tb.animate([{transform:"rotate(0deg) scale(1)"},{transform:"rotate(360deg) scale(1.25)"},{transform:"rotate(360deg) scale(1)"}],{duration:550,easing:"ease-out"});
 });
 
@@ -540,6 +586,82 @@ tb.addEventListener("click",()=>{
 })();
 
 render(); apply(); replay();
+</script>
+
+<div class="modal" id="modal-why" role="dialog" aria-modal="true" aria-labelledby="why-title" hidden>
+  <div class="modal-box">
+    <button class="modal-close" type="button" aria-label="닫기" data-close>✕</button>
+    <h2 id="why-title">💡 만든 이유</h2>
+    <p>책 한 권의 가격마저 부담스러워진 시대, 모바일 환경에 익숙한 학생들이 언제 어디서나 쉽고 편하게 수학을 접할 수 있도록 만들었습니다. 작은 호기심이 배움의 즐거움으로, 작은 성취가 수학에 대한 자신감으로 이어지기를 바랍니다.</p>
+    <p>특히 이 자료가 학생들에게 수학의 문턱을 낮추고, 수학을 포기하는 학생이 아닌 수학을 즐기고 도전하는 학생으로 성장하는 작은 계기가 되었으면 합니다.</p>
+    <p class="how-sign">&lt; 상무고 수학쌤 유환수 드림 &gt;</p>
+  </div>
+</div>
+
+<div class="modal" id="modal-how" role="dialog" aria-modal="true" aria-labelledby="how-title" hidden>
+  <div class="modal-box">
+    <button class="modal-close" type="button" aria-label="닫기" data-close>✕</button>
+    <h2 id="how-title">✅ 활용법!</h2>
+    <ul class="how-list">
+      <li>① 📱 원하는 과정 바로 이동
+        <ul>
+          <li>필요한 단원과 개념을 빠르게 찾아 학습</li>
+        </ul>
+      </li>
+      <li>② 🧩 직접 조작하고 체험하는 수학
+        <ul>
+          <li>인터랙티브 기능으로 개념과 원리 탐구</li>
+          <li>눈으로 보고, 직접 조작하며 이해하기</li>
+        </ul>
+      </li>
+      <li>③ 📌 '소개글' 버튼 활용
+        <ul>
+          <li>각 콘텐츠의 상세한 설명 확인</li>
+          <li>학습 방향과 활용 방법 참고</li>
+        </ul>
+      </li>
+      <li>④ 😊 무엇보다 편한 마음으로 천천히 포기하지 않기!
+        <ul>
+          <li>여러분의 작은 노력도 크게 응원할게요!</li>
+        </ul>
+      </li>
+    </ul>
+    <p class="how-sign">&lt; 상무고 수학쌤 유환수 드림 &gt;</p>
+  </div>
+</div>
+
+<script>
+/* ===== 팝업(만든 이유 / 활용법) ===== */
+(function(){
+  let lastBtn = null;
+  function openModal(id, btn){
+    const m = document.getElementById(id);
+    if(!m) return;
+    lastBtn = btn || null;
+    m.hidden = false; m.classList.add("open");
+    document.body.style.overflow = "hidden";
+    const c = m.querySelector("[data-close]"); if(c) c.focus();
+  }
+  function closeModal(m){
+    m.classList.remove("open"); m.hidden = true;
+    if(!document.querySelector(".modal.open")) document.body.style.overflow = "";
+    if(lastBtn) lastBtn.focus();
+  }
+  document.querySelectorAll(".info-btn").forEach(b=>{
+    b.addEventListener("click",()=>openModal(b.dataset.modal, b));
+  });
+  document.querySelectorAll(".modal").forEach(m=>{
+    m.addEventListener("click",e=>{
+      if(e.target===m || e.target.closest("[data-close]")) closeModal(m);
+    });
+  });
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){
+      const m = document.querySelector(".modal.open");
+      if(m) closeModal(m);
+    }
+  });
+})();
 </script>
 </body>
 </html>
