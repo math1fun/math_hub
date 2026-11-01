@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수학 개념 총정리 허브 | 상무고 유환수</title>
+<meta name="description" content="중1부터 확률과 통계까지, 인터랙티브 수학 개념 총정리 사이트 7종을 한눈에 접속하는 허브 페이지">
+<style>
+:root{
+  --bg:#0b1020; --bg2:#141b3a; --card:rgba(255,255,255,.055); --card-hover:rgba(255,255,255,.09);
+  --line:rgba(255,255,255,.13); --text:#eef1ff; --muted:#a9b2d6; --faint:#7d87ae;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{
+  --bg:#f3f5fc; --bg2:#e4e9fa; --card:#ffffff; --card-hover:#ffffff;
+  --line:rgba(20,30,70,.14); --text:#141a36; --muted:#4b557f; --faint:#6f7799;
+  --shadow:0 8px 24px rgba(30,40,90,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6; min-height:100vh;
+  background-image:
+    radial-gradient(900px 500px at 12% -5%, rgba(96,165,250,.20), transparent 60%),
+    radial-gradient(800px 500px at 95% 5%, rgba(167,139,250,.18), transparent 60%),
+    radial-gradient(700px 500px at 50% 105%, rgba(45,212,191,.12), transparent 60%);
+  background-attachment:fixed;
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* ===== 키프레임 ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px) scale(.97)}}
+@keyframes gradShift{from{background-position:0% 50%}to{background-position:100% 50%}}
+@keyframes rise{
+  0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}
+  10%{opacity:.17}
+  90%{opacity:.17}
+  100%{transform:translate3d(var(--dx,0px),-118vh,0) rotate(360deg);opacity:0}
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(52,211,153,.7)}
+  70%{box-shadow:0 0 0 8px rgba(52,211,153,0)}
+  100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}
+}
+@keyframes shimmer{from{background-position:0% 0}to{background-position:200% 0}}
+@keyframes sweep{to{left:135%}}
+@keyframes ripple{to{transform:scale(5);opacity:0}}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-6deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* 떠다니는 수학 기호 */
+.bg-symbols{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.bg-symbols span{
+  position:absolute;bottom:-70px;color:var(--muted);font-family:Georgia,"Times New Roman",serif;font-style:italic;
+  opacity:0;animation:rise linear infinite;user-select:none;
+}
+
+/* 스크롤 진행 막대 */
+.progress{
+  position:fixed;top:0;left:0;height:3px;width:100%;z-index:60;transform-origin:0 50%;transform:scaleX(0);
+  background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6);
+}
+
+/* 등장 효과 */
+.fx{animation:fadeUp .8s cubic-bezier(.2,.7,.2,1) var(--d,0ms) both}
+.rv:not(.in){opacity:0}
+.rv.in{animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) var(--d,0ms) backwards}
+
+/* top bar */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.badge{
+  font-size:.8rem;font-weight:600;padding:6px 14px;border-radius:999px;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);
+}
+.badge::before{
+  content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#34d399;
+  margin-right:8px;vertical-align:middle;animation:pulse 1.9s infinite;
+}
+.theme-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+  background:var(--card);color:var(--text);cursor:pointer;font-size:1.05rem;
+  transition:transform .25s ease,background .2s ease;
+}
+.theme-btn:hover{background:var(--card-hover);transform:scale(1.1)}
+
+/* hero */
+.hero{text-align:center;padding:34px 0 26px}
+.hero h1{font-size:clamp(1.9rem,5.2vw,3.1rem);line-height:1.25;font-weight:800;letter-spacing:-.02em}
+.hero h1 .grad{
+  background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6,#fbbf24,#60a5fa);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:gradShift 7s linear infinite alternate;
+}
+.hero p{margin:14px auto 0;max-width:620px;color:var(--muted);font-size:1.02rem}
+
+/* controls */
+.controls{
+  position:sticky;top:0;z-index:20;margin:20px -20px 8px;padding:12px 20px;
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;
+  background:linear-gradient(var(--bg) 70%,transparent);backdrop-filter:blur(8px);
+}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{
+  padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);
+  color:var(--muted);font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:transform .2s ease,color .2s ease,background .25s ease,box-shadow .25s ease;
+}
+.tab:hover{color:var(--text);transform:translateY(-2px)}
+.tab:active{transform:scale(.95)}
+.tab.active{background:linear-gradient(90deg,#4f7cff,#8b5cf6);border-color:transparent;color:#fff;box-shadow:0 6px 18px rgba(99,102,241,.45)}
+
+/* sections */
+.section{margin-top:30px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.sec-head h2{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:10px}
+.sec-head h2 .ico{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.15rem;
+  background:var(--card);border:1px solid var(--line);animation:bob 3.4s ease-in-out infinite;
+}
+.sec-head p{color:var(--muted);font-size:.9rem}
+
+/* 학습 순서 */
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.flow .node{
+  font-family:inherit;font-size:.82rem;color:var(--muted);background:transparent;cursor:pointer;
+  padding:5px 13px;border-radius:999px;border:1px dashed var(--line);
+  transition:transform .2s ease,color .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.flow .node:hover{color:var(--text);background:var(--card);border-style:solid;border-color:#7c9cff;transform:translateY(-3px);box-shadow:0 6px 16px rgba(124,156,255,.25)}
+.flow .node:active{transform:scale(.94)}
+.flow .arr{color:var(--faint);display:inline-block}
+.flow.in .node{animation:pop .5s cubic-bezier(.2,.9,.3,1.2) var(--nd,0s) backwards}
+.flow.in .arr{animation:pop .45s ease var(--nd,0s) backwards,nudge 1.6s ease-in-out calc(var(--nd,0s) + .7s) infinite}
+.flow .hint{margin-left:6px;font-size:.74rem;color:var(--faint);animation:blink 2.6s ease-in-out infinite}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.card{
+  --c:#60a5fa;
+  position:relative;padding:20px 20px 18px;border-radius:20px;overflow:hidden;
+  background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);
+  transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px));
+  transition:transform .25s ease,background .2s ease,border-color .2s ease,box-shadow .3s ease;
+  display:flex;flex-direction:column;gap:12px;
+}
+.card::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:4px;z-index:2;
+  background:linear-gradient(90deg,var(--c) 0%,rgba(255,255,255,.9) 50%,var(--c) 100%);
+  background-size:200% 100%;animation:shimmer 3.2s linear infinite;
+}
+.card::after{
+  content:"";position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:50%;
+  background:radial-gradient(circle,var(--c),transparent 70%);opacity:.16;pointer-events:none;
+  transition:transform .5s ease,opacity .4s ease;
+}
+.card:hover{--ty:-6px;background:var(--card-hover);border-color:var(--c);box-shadow:0 18px 40px -14px var(--c),var(--shadow)}
+.card:hover::after{transform:scale(1.5);opacity:.28}
+.card .spot{
+  position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s ease;
+  background:radial-gradient(320px circle at var(--mx,50%) var(--my,0%),var(--c),transparent 65%);
+}
+.card:hover .spot{opacity:.16}
+.card.flash{box-shadow:0 0 0 3px var(--c),0 0 40px var(--c)}
+.card.flash .spot{opacity:.38}
+.card > *:not(.spot){position:relative}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.grade{
+  font-size:.76rem;font-weight:800;padding:4px 11px;border-radius:999px;color:#0b1020;background:var(--c);
+  transition:transform .25s ease;
+}
+.card:hover .grade{transform:scale(1.1) rotate(-3deg)}
+.meta{font-size:.78rem;color:var(--muted)}
+.card h3{font-size:1.3rem;font-weight:800;line-height:1.3}
+.card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.card .desc{font-size:.88rem;color:var(--muted)}
+.units{display:flex;flex-wrap:wrap;gap:6px}
+.units li{
+  list-style:none;font-size:.76rem;padding:3px 10px;border-radius:8px;
+  border:1.5px solid var(--c);color:var(--muted);
+  transition:transform .25s ease,color .25s ease,border-color .25s ease;
+  transition-delay:calc(var(--k,0) * 28ms);
+}
+.card:hover .units li{transform:translateY(-3px);color:var(--text);border-color:var(--c)}
+.actions{display:flex;gap:8px;margin-top:auto;z-index:2;flex-wrap:wrap}
+.btn{
+  position:relative;overflow:hidden;
+  padding:9px 14px;border-radius:12px;font-size:.86rem;font-weight:700;border:1px solid var(--line);
+  background:transparent;color:var(--text);cursor:pointer;font-family:inherit;
+  transition:transform .2s ease,background .2s ease,filter .2s ease;
+}
+.btn:hover{background:var(--card-hover);transform:translateY(-2px)}
+.btn:active{transform:scale(.95)}
+.btn.primary{background:var(--c);border-color:transparent;color:#0b1020;flex:1;text-align:center}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.primary::before{
+  content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);
+}
+.btn.primary:hover::before{animation:sweep .9s ease}
+.btn .arrow{display:inline-block;transition:transform .25s ease}
+.btn.primary:hover .arrow{transform:translate(3px,-3px)}
+.btn.pop{animation:pop .45s cubic-bezier(.2,.9,.3,1.3)}
+.ripple{
+  position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;
+  background:rgba(255,255,255,.55);transform:scale(0);animation:ripple .65s ease-out;pointer-events:none;
+}
+
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px) scale(.9);opacity:0;
+  background:#1f2a55;color:#fff;padding:10px 18px;border-radius:999px;font-size:.88rem;
+  transition:.3s cubic-bezier(.2,.9,.3,1.3);z-index:50;pointer-events:none;border:1px solid rgba(255,255,255,.2);
+}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+
+footer{margin:50px 0 34px;text-align:center;color:var(--faint);font-size:.82rem;line-height:1.8}
+footer a{text-decoration:underline;text-underline-offset:3px}
+
+@media (max-width:560px){
+  .controls{position:static;background:none;backdrop-filter:none}
+}
+@media print{
+  body{background:#fff;color:#000}
+  :root{--card:#fff;--line:#bbb;--text:#000;--muted:#333;--faint:#444;--shadow:none}
+  .controls,.theme-btn,.actions .btn:not(.primary),.toast,.bg-symbols,.progress,.flow .hint{display:none!important}
+  .rv:not(.in){opacity:1}
+  .card{break-inside:avoid;transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .rv:not(.in){opacity:1}
+  .bg-symbols{display:none}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="bg-symbols" id="bgSymbols" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <div class="topbar fx">
+    <span class="badge">상무고등학교 · 유환수 선생님 자료</span>
+    <button class="theme-btn" id="themeBtn" aria-label="화면 테마 전환" title="화면 테마 전환">🌙</button>
+  </div>
+
+  <header class="hero">
+    <h1 class="fx" style="--d:120ms"><span class="grad">수학 개념 총정리 허브</span></h1>
+    <p class="fx" style="--d:260ms">정의 → 공식 → 예제 흐름으로 정리하고, 그림을 직접 움직이며 배우는 개념을 한곳에 모았습니다.</p>
+  </header>
+
+  <div class="controls fx" style="--d:700ms">
+    <div class="tabs" role="tablist" aria-label="학교급 필터">
+      <button class="tab active" data-filter="all" role="tab">전체</button>
+      <button class="tab" data-filter="middle" role="tab">중학교 수학</button>
+      <button class="tab" data-filter="high" role="tab">고등학교 수학</button>
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="section" id="sec-middle" data-level="middle">
+      <div class="sec-head rv">
+        <h2><span class="ico">📘</span>중학교 수학</h2>
+        <p>중1 · 중2 개념 총정리</p>
+      </div>
+      <div class="grid" id="grid-middle"></div>
+    </section>
+
+    <section class="section" id="sec-high" data-level="high">
+      <div class="sec-head rv">
+        <h2><span class="ico">📐</span>고등학교 수학 <small style="font-size:.8rem;font-weight:600;color:var(--muted)">(2022 개정)</small></h2>
+        <p>공통수학 · 선택과목 개념 총정리</p>
+      </div>
+      <div class="flow rv" aria-label="학습 순서">
+        <button class="node" type="button" data-grade="공통수학1" style="--nd:.15s">공통수학1</button><span class="arr" aria-hidden="true" style="--nd:.3s">→</span>
+        <button class="node" type="button" data-grade="공통수학2" style="--nd:.45s">공통수학2</button><span class="arr" aria-hidden="true" style="--nd:.6s">→</span>
+        <button class="node" type="button" data-grade="대수" style="--nd:.75s">대수</button><span class="arr" aria-hidden="true" style="--nd:.9s">→</span>
+        <button class="node" type="button" data-grade="미적분1" style="--nd:1.05s">미적분1</button><span class="arr" aria-hidden="true" style="--nd:1.2s">→</span>
+        <button class="node" type="button" data-grade="확률과 통계" style="--nd:1.35s">확률과 통계</button>
+        <span class="hint">단계를 누르면 해당 카드로 이동</span>
+      </div>
+      <div class="grid" id="grid-high"></div>
+    </section>
+
+  </main>
+
+  <footer class="rv">
+    <div>각 카드를 누르면 해당 개념 총정리 사이트가 새 탭에서 열립니다.</div>
+    <div>인터렉티브한 앱으로 설명과 함께 직접 학생이 조작하고 체험할 수 있도록 하였습니다.</div>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">링크를 복사했습니다</div>
+
+<script>
+/* ===== 사이트 목록 (새 과목은 객체 하나만 추가하면 됩니다) ===== */
+const SITES = [
+  {
+    level:"middle", grade:"중1", title:"중학교 1학년 수학",
+    desc:"8개 대단원 · 79개 핵심 개념 · 36개 체험 그림. 그림을 직접 움직이며 원리를 탐구합니다.",
+    url:"https://middlemath1.vercel.app/", blog:"https://blog.naver.com/math-fun/224453905401",
+    color:"#ff7a7a", meta:"8개 대단원 · 79개 개념",
+    units:["소인수분해","정수와 유리수","문자와 식","그래프와 비례관계","도형의 기초","평면도형","입체도형","통계"]
+  },
+  {
+    level:"middle", grade:"중2", title:"중학교 2학년 수학",
+    desc:"7개 대단원 · 67개 핵심 개념 · 44개 체험 그림. 그림을 직접 움직이며 원리를 탐구합니다.",
+    url:"https://middlemath2.vercel.app/", blog:"https://blog.naver.com/math-fun/224453921430",
+    color:"#34d399", meta:"7개 대단원 · 67개 개념",
+    units:["수와 식","부등식과 연립방정식","일차함수와 그래프","도형의 성질","도형의 닮음","피타고라스의 정리","확률"]
+  },
+  {
+    level:"high", grade:"공통수학1", title:"공통수학1",
+    desc:"다항식의 계산부터 방정식·부등식, 경우의 수, 행렬까지 4개 대단원 39개 핵심 개념.",
+    url:"https://highmath1.vercel.app/", blog:"https://blog.naver.com/math-fun/224454989672",
+    color:"#60a5fa", meta:"4개 대단원 · 39개 개념",
+    units:["다항식","방정식과 부등식","경우의 수","행렬"]
+  },
+  {
+    level:"high", grade:"공통수학2", title:"공통수학2",
+    desc:"도형의 방정식, 집합과 명제, 함수까지 3개 대단원 50개 핵심 개념.",
+    url:"https://highmath2.vercel.app/", blog:"https://blog.naver.com/math-fun/224454997411",
+    color:"#a78bfa", meta:"3개 대단원 · 50개 개념",
+    units:["도형의 방정식","집합과 명제","함수"]
+  },
+  {
+    level:"high", grade:"대수", title:"대수",
+    desc:"지수와 로그, 삼각함수, 수열을 58개 핵심 개념으로 체계적으로 정리했습니다.",
+    url:"https://highmath3.vercel.app/", blog:"https://blog.naver.com/math-fun/224455009860",
+    color:"#38bdf8", meta:"3개 대단원 · 58개 개념",
+    units:["지수와 로그","삼각함수","수열"]
+  },
+  {
+    level:"high", grade:"미적분1", title:"미적분1",
+    desc:"함수의 극한과 연속, 미분, 적분 30개 핵심 개념과 29개 체험 그림.",
+    url:"https://highmath4.vercel.app/", blog:"https://blog.naver.com/math-fun/224455011951",
+    color:"#2dd4bf", meta:"3개 대단원 · 30개 개념",
+    units:["함수의 극한과 연속","미분","적분"]
+  },
+  {
+    level:"high", grade:"확률과 통계", title:"확률과 통계",
+    desc:"순열과 조합부터 확률분포, 통계적 추정까지 5개 영역 35개 핵심 개념.",
+    url:"https://highmath5.vercel.app/", blog:"https://blog.naver.com/math-fun/224455391604",
+    color:"#fbbf24", meta:"5개 영역 · 35개 개념",
+    units:["순열과 조합","확률의 뜻과 활용","조건부확률","확률분포","통계적 추정"]
+  }
+];
+
+const $ = s => document.querySelector(s);
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const CAN_HOVER = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+function cardHTML(s, i){
+  return `
+  <article class="card rv" style="--c:${s.color}" data-level="${s.level}" data-i="${i}" data-grade="${s.grade}">
+    <span class="spot"></span>
+    <div class="top"><span class="grade">${s.grade}</span><span class="meta">${s.meta}</span></div>
+    <h3><a href="${s.url}" target="_blank" rel="noopener">${s.title}</a></h3>
+    <p class="desc">${s.desc}</p>
+    <ul class="units">${s.units.map((u,k)=>`<li style="--k:${k}">${u}</li>`).join("")}</ul>
+    <div class="actions">
+      <a class="btn primary" href="${s.url}" target="_blank" rel="noopener">개념 총정리 열기 <span class="arrow">↗</span></a>
+      <a class="btn" href="${s.blog}" target="_blank" rel="noopener" title="블로그 소개글">소개글</a>
+      <button class="btn copy" type="button" data-url="${s.url}" title="링크 복사" aria-label="${s.title} 링크 복사">🔗</button>
+    </div>
+  </article>`;
+}
+
+function render(){
+  ["middle","high"].forEach(l=>{
+    $("#grid-"+l).innerHTML = SITES.map((s,i)=>s.level===l?cardHTML(s,i):"").join("");
+  });
+}
+
+/* ===== 스크롤 등장 효과 ===== */
+let io = null;
+if("IntersectionObserver" in window){
+  io = new IntersectionObserver(entries=>{
+    const vis = entries.filter(e=>e.isIntersecting).sort((a,b)=>{
+      const ra=a.boundingClientRect, rb=b.boundingClientRect;
+      return (ra.top-rb.top) || (ra.left-rb.left);
+    });
+    vis.forEach((e,i)=>{
+      e.target.style.setProperty("--d",(i*90)+"ms");
+      e.target.classList.add("in");
+      io.unobserve(e.target);
+    });
+  },{threshold:.12,rootMargin:"0px 0px -4% 0px"});
+}
+function replay(){
+  const els = document.querySelectorAll(".rv");
+  if(!io){ els.forEach(el=>el.classList.add("in")); return; }
+  els.forEach(el=>{ el.classList.remove("in"); io.unobserve(el); });
+  void document.body.offsetWidth;
+  els.forEach(el=>io.observe(el));
+}
+
+/* ===== 필터 + 검색 ===== */
+let filter = "all";
+function apply(){
+  document.querySelectorAll(".card").forEach(c=>{
+    const s = SITES[c.dataset.i];
+    c.style.display = (filter==="all"||s.level===filter) ? "" : "none";
+  });
+  document.querySelectorAll(".section").forEach(sec=>{
+    const has = [...sec.querySelectorAll(".card")].some(c=>c.style.display!=="none");
+    sec.style.display = has ? "" : "none";
+  });
+}
+function setFilter(f){
+  filter = f;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active", x.dataset.filter===f));
+}
+
+document.querySelectorAll(".tab").forEach(b=>{
+  b.addEventListener("click",()=>{
+    setFilter(b.dataset.filter);
+    apply(); replay();
+  });
+});
+
+/* ===== 학습 순서 → 카드로 이동 + 강조 ===== */
+document.querySelectorAll(".flow .node").forEach(n=>{
+  n.addEventListener("click",()=>{
+    const grade = n.dataset.grade;
+    let card = document.querySelector(`.card[data-grade="${grade}"]`);
+    if(!card) return;
+    if(card.style.display==="none"){
+      setFilter("all"); apply(); replay();
+    }
+    card.classList.add("in");
+    card.scrollIntoView({behavior: REDUCED ? "auto" : "smooth", block:"center"});
+    card.classList.remove("flash"); void card.offsetWidth;
+    card.classList.add("flash");
+    setTimeout(()=>card.classList.remove("flash"),1700);
+  });
+});
+
+/* ===== 카드 마우스 효과(빛 따라오기 + 살짝 기울기) ===== */
+if(CAN_HOVER && !REDUCED){
+  document.addEventListener("pointermove",e=>{
+    const c = e.target.closest && e.target.closest(".card");
+    if(!c) return;
+    const r = c.getBoundingClientRect();
+    const x = (e.clientX-r.left)/r.width, y = (e.clientY-r.top)/r.height;
+    c.style.setProperty("--mx",(x*100)+"%");
+    c.style.setProperty("--my",(y*100)+"%");
+    c.style.setProperty("--ry",((x-.5)*7)+"deg");
+    c.style.setProperty("--rx",((.5-y)*5)+"deg");
+  });
+  document.addEventListener("pointerout",e=>{
+    const c = e.target.closest && e.target.closest(".card");
+    if(c && !c.contains(e.relatedTarget)){
+      c.style.setProperty("--rx","0deg"); c.style.setProperty("--ry","0deg");
+    }
+  });
+}
+
+/* ===== 버튼 물결 효과 + 링크 복사 ===== */
+document.addEventListener("click",e=>{
+  const btn = e.target.closest(".btn");
+  if(btn && !REDUCED){
+    const r = btn.getBoundingClientRect();
+    const sp = document.createElement("span");
+    sp.className = "ripple";
+    sp.style.left = (e.clientX-r.left)+"px";
+    sp.style.top = (e.clientY-r.top)+"px";
+    btn.appendChild(sp);
+    sp.addEventListener("animationend",()=>sp.remove());
+  }
+  const b = e.target.closest(".copy"); if(!b) return;
+  const url = b.dataset.url;
+  const done = ()=>{
+    toast("링크를 복사했습니다");
+    b.textContent="✅"; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+    setTimeout(()=>{b.textContent="🔗"; b.classList.remove("pop");},1300);
+  };
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(url).then(done).catch(()=>fallback(url,done));
+  } else fallback(url,done);
+});
+let tt;
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),1600);
+}
+function fallback(text,cb){
+  const ta=document.createElement("textarea");
+  ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand("copy");cb();}catch(_){toast("복사하지 못했습니다");}
+  ta.remove();
+}
+
+/* ===== 테마 ===== */
+const root=document.documentElement, tb=$("#themeBtn");
+function setTheme(t){
+  root.dataset.theme=t; tb.textContent = t==="light" ? "☀️" : "🌙";
+  try{localStorage.setItem("mathHubTheme",t);}catch(_){}
+}
+let saved=null; try{saved=localStorage.getItem("mathHubTheme");}catch(_){}
+setTheme(saved || "dark");
+tb.addEventListener("click",()=>{
+  setTheme(root.dataset.theme==="light"?"dark":"light");
+  if(tb.animate && !REDUCED) tb.animate([{transform:"rotate(0deg) scale(1)"},{transform:"rotate(360deg) scale(1.25)"},{transform:"rotate(360deg) scale(1)"}],{duration:550,easing:"ease-out"});
+});
+
+/* ===== 떠다니는 수학 기호 ===== */
+(function(){
+  if(REDUCED) return;
+  const box = $("#bgSymbols");
+  const SYM = ["π","∑","∫","√x","f(x)","±","dx","∞","θ","Δ","x²","lim","≠","sin","log","a²+b²"];
+  const N = window.innerWidth < 600 ? 10 : 18;
+  for(let i=0;i<N;i++){
+    const s = document.createElement("span");
+    const dur = 20 + Math.random()*24;
+    s.textContent = SYM[Math.floor(Math.random()*SYM.length)];
+    s.style.left = (Math.random()*96)+"%";
+    s.style.fontSize = (16 + Math.random()*30)+"px";
+    s.style.animationDuration = dur+"s";
+    s.style.animationDelay = (-Math.random()*dur)+"s";
+    s.style.setProperty("--dx",((Math.random()-.5)*90)+"px");
+    box.appendChild(s);
+  }
+})();
+
+/* ===== 스크롤 진행 막대 ===== */
+(function(){
+  const bar = $("#progress"); let raf = 0;
+  function upd(){
+    raf = 0;
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = "scaleX(" + (h>0 ? Math.min(window.scrollY/h,1) : 0) + ")";
+  }
+  window.addEventListener("scroll",()=>{ if(!raf) raf=requestAnimationFrame(upd); },{passive:true});
+  window.addEventListener("resize",upd);
+  upd();
+})();
+
+render(); apply(); replay();
+</script>
+</body>
+</html>
